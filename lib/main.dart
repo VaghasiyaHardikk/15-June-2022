@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:http/http.dart';
+import 'package:school_lite_10th_june/WebSession.dart';
 import 'package:school_lite_10th_june/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:page_transition/page_transition.dart';
@@ -123,7 +124,13 @@ class _MyLoginPageState extends State<MyLoginPage> {
     if (response.statusCode == 200) {
       jsonData = json.decode(response.body);
       setState(() {
-        sharedPreferences.setString("Data", jsonData['fullName']);
+        sharedPreferences.setString("fullName", jsonData['fullName']);
+        sharedPreferences.setString("appUserHash", jsonData['appUserHash']);
+        sharedPreferences.setString("mobile", jsonData['mobile']);
+        sharedPreferences.setString("email", jsonData['email']);
+        sharedPreferences.setString("userType", jsonData['userType']);
+        sharedPreferences.setString("token", jsonData['token']);
+
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (BuildContext context) => HomePage()),
             (Route<dynamic> route) => false);
@@ -134,7 +141,9 @@ class _MyLoginPageState extends State<MyLoginPage> {
   }
 
   SharedPreferences? logindata;
+  SharedPreferences? WebSession;
   bool? newuser;
+
 
   @override
   void initState() {
@@ -324,9 +333,12 @@ class _MyLoginPageState extends State<MyLoginPage> {
           // ignore: unrelated_type_equality_checks
           if (username != '' && password != '') {
             print('Successfull');
+            
             logindata?.setBool('login', false);
+            WebSession?.setBool('login', false);
 
             logindata?.setString('username', username);
+            WebSession?.setString('username', username);
 
             setState(() => state = ButtonState.loading);
             await Future.delayed(Duration(seconds: 3));

@@ -1,6 +1,5 @@
 // ignore_for_file: non_constant_identifier_names, unused_local_variable, avoid_print, unrelated_type_equality_checks, prefer_interpolation_to_compose_strings, curly_braces_in_flow_control_structures, await_only_futures
 
-import 'dart:html';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +12,10 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 
 Future<Object> WebSession() async {
+  
   final sharedPreferences = await SharedPreferences.getInstance();
-  var AppUserId =  DataProtection.decryptAES("AppUserHash",);
+  var AppUserHashShared = await sharedPreferences.get("AppUserHash");
+  var AppUserId =  DataProtection.decryptAES(AppUserHashShared);
   var AppUserEmail = await sharedPreferences.get("Email");
   var AppUserName = await sharedPreferences.get("UserName");
 
@@ -29,11 +30,12 @@ Future<Object> WebSession() async {
         DateFormat dateFormat = DateFormat("yyyy/MM/dd HH:mm:ss");
         String string = dateFormat.format(DateTime.now());
 
-        var token = AppUserId + "~" + AppUserEmail + "~" + AppUserName + "~" + DateFormat + "~" + MediaDeviceInfo + "schoolDesk";
+        // var token = AppUserId + "~" + AppUserEmail + "~" + AppUserName + "~" + DateFormat + "~" + DeviceInfoPlugin + "schoolDesk";
+        var token = AppUserId + "~" + AppUserEmail + "~" + AppUserName + "~" + dateFormat + "~" ;
         var tokenEncrypt = DataProtection.encryptAES(token);
 
         {
-          var HomeWebViewURL = Uri.parse("Mobile/Toweb?token=" + tokenEncrypt);
+          var HomeWebViewURL = Uri.parse("https://test.rbkei.org/Mobile/Toweb?token=" + tokenEncrypt);
           var urlStatus = HomeWebViewURL;
           {
             return HomeWebViewURL;

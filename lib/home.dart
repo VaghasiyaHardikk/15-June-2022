@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:school_lite_10th_june/Dataprotection.dart';
 import 'package:school_lite_10th_june/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -17,7 +18,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late WebViewController controller;
   late SharedPreferences logindata;
-  String? Data;
+  String? FullName, AppUserHash, Email, Token, UserType, Mobile, AppUserId;
+  SharedPreferences? WebSession;
+
+  
 
   @override
   void initState() {
@@ -28,7 +32,12 @@ class _HomePageState extends State<HomePage> {
   void initial() async {
     logindata = await SharedPreferences.getInstance();
     setState(() {
-      Data = logindata.getString('Data');
+      Email = logindata.getString('email');
+      UserType = logindata.getString('userType');
+      Mobile = logindata.getString('mobile');
+      AppUserHash = logindata.getString('appUserHash');
+      AppUserId =  DataProtection.decryptAES(AppUserHash);
+      FullName = logindata.getString('fullName');
     });
   }
 
@@ -45,7 +54,6 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.only(right: 10.0),
               child: IconButton(
                 onPressed: () {
-                  logindata.setBool('Data', true);
                   Navigator.pushReplacement(
                       context,
                       new MaterialPageRoute(
@@ -74,7 +82,7 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(38.0),
                           child: Center(
                               child: Text(
-                            'fullName - $Data',
+                            'fullName - $AppUserId, $FullName, $Mobile, $Email, $AppUserHash, $UserType',
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w400),
                           )),
@@ -95,7 +103,8 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Expanded(
                       child: WebView(
-                        // javascriptMode: JavascriptMode.unrestricted,
+                        
+                        javascriptMode: JavascriptMode.unrestricted,
                         initialUrl:
                             'https://test.rbkei.org/Employees/GetEmployeeProfile?IsProfile=True',
                         onWebViewCreated: (controller) {
